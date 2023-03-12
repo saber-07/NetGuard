@@ -6,7 +6,8 @@ import time
 ips = []
 interface = "wlan0"
 api_key = "24f96dafeb29ade43f5b57f2bd860e72152432a610a8f7b4059213059893802f"
-my_ip = "93.6.138.209"
+my_ip = "192.168.0.16"
+
 
 def packet_callback(packet):
     if packet.haslayer(IP):
