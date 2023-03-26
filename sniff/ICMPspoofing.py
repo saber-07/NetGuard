@@ -1,8 +1,5 @@
 from scapy.all import *
 
-my_ip = "192.168.0.16"
-interface = "wlan0"
-
 
 def detect_unsolicited_ping(packet):
     captured_icmp_packets = []

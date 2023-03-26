@@ -31,15 +31,15 @@ def packet_callback(packet):
 
             # Check if the IP address is considered malicious
             if data["data"]["attributes"]["last_analysis_stats"]["malicious"] == 0 and data["data"]["attributes"]["last_analysis_stats"]["suspicious"] == 0:
-                with open('resultat.txt', 'a') as r:
+                with open('../resultat.txt', 'a') as r:
                     r.write(ip) and r.write(' --\twhite list\n')
 
             elif data["data"]["attributes"]["last_analysis_stats"]["malicious"] >= 0:
-                with open('resultat.txt', 'a') as r:
+                with open('../resultat.txt', 'a') as r:
                     r.write(ip) and r.write(' --\tblack list\n')
 
             elif data["data"]["attributes"]["last_analysis_stats"]["suspicious"] >= 0:
-                with open('resultat.txt', 'a') as r:
+                with open('../resultat.txt', 'a') as r:
                     r.write(ip) and r.write(' --\tgrey list\n')
 
             else:
