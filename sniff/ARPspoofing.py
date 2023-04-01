@@ -1,38 +1,34 @@
 from scapy.all import *
 
 
-# turn off output
+# Désactiver la sortie de texte
 conf.verb = 0
 
-
+# Fonction pour obtenir l'adresse MAC associée à une adresse IP donnée
 def get_mac(ip_address):
-
     responses, unanswered = srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=ip_address), timeout=2, retry=10)
 
-    # return the MAC address from a response
+    # Récupérer l'adresse MAC depuis la réponse
     for s, r in responses:
         return r[Ether].src
     return None
 
-
+# Fonction pour afficher les paquets ARP et détecter le spoofing ARP
 def arp_display(pkt):
-    if pkt[ARP].op == 2: # check if ARP response
+    if pkt[ARP].op == 2: # Vérifier si le paquet est une réponse ARP
         try:
-            real_mac = get_mac(pkt[ARP].psrc) # get real MAC address
-            response_mac = pkt[ARP].hwsrc # get MAC address from response
+            real_mac = get_mac(pkt[ARP].psrc) # Récupérer la véritable adresse MAC
+            response_mac = pkt[ARP].hwsrc # Récupérer l'adresse MAC de la réponse
             if real_mac != response_mac:
-                print(f"[!] Detected ARP spoofing from {response_mac} to {pkt[ARP].psrc}")
-                # alert administrator here using email or other method
+                print(f"[!] Détection de spoofing ARP de {response_mac} à {pkt[ARP].psrc}")
+                # Alerter l'administrateur ici en utilisant un e-mail ou autre méthode
         except Exception as e:
             print(e)
-            pass
-
 
 try:
-    print("[*] Starting ARP spoof detection")
+    print("[*] Démarrage de la détection de spoofing ARP")
     sniff(filter="arp", prn=arp_display, store=0, count=0)
-    # sniff for ARP packets
+    # Capturer les paquets ARP
 except KeyboardInterrupt:
-    print("[*] Exiting ARP spoof detection")
+    print("[*] Arrêt de la détection de spoofing ARP")
     exit(0)
-
