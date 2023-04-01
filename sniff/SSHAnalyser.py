@@ -1,5 +1,5 @@
 from scapy.all import *
-
+import json
 SSHconnexions = {}
 SSHPasswordAttempts = {}
 SSHsuccess = {}
@@ -11,8 +11,9 @@ def SSHAnalysis(pkt):       #analyse les paquets ssh
     dst = pkt[IP].dst
     key = "dst:%s, src:%s" % (dst,src)
     dport = pkt[TCP].dport
-   
-    
+    warning1 = "Login attempt"
+    warning2 = "Certified IP, connection successful"
+    warning3 = "Potential Brute Force, Malicious IP"
     if not key in SSHLoginAttempts:
         SSHLoginAttempts[key] = {}
 
@@ -33,7 +34,7 @@ def SSHAnalysis(pkt):       #analyse les paquets ssh
     if pkt[IP].len == 668 or pkt[IP].len == 696:  #paquets correspondant à la réussite de connexion
             if dport in SSHsuccess[key]:
                     SSHsuccess[key][dport] += 1
-            print("\t\t.....................SSH success: %s\n" % SSHsuccess[key][port])
+            print("\t\t.....................SSH success: %s\n" % SSHsuccess[key][dport])
 
     if not key in SSHPasswordAttempts: #crée le dictionnaire de clés de tentative
         SSHPasswordAttempts[key] = {}
@@ -60,7 +61,7 @@ def SSHAnalysis(pkt):       #analyse les paquets ssh
     if pkt[IP].len == 128 or pkt[IP].len == 88 or pkt[IP].len == 192: #Déconnexion
         print("\t\t..........DISCONNECT...........\n")
         SSHsuccess[key][dport] = 0
-        SSHlogin[key][dst] = 0
+        SSHLoginAttempts[key][dst] = 0
 
 
 
