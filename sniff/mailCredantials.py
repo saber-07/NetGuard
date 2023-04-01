@@ -6,8 +6,8 @@ def packet_callback(pack):
     if pack[TCP].payload:
         mail_packet = bytes(pack[TCP].payload).decode('utf-8')
         if "user" in mail_packet.lower() or "pass" in mail_packet.lower():
-            print("[*] Server: %s" % pack[IP].dst)
-            print("[*] %s" % mail_packet)
+            print(f"[*] Server: {pack[IP].dst}")
+            print(f"[*] {mail_packet}")
 
 
 # fire up our sniffer

@@ -1,27 +1,23 @@
 from scapy.all import *
 import time
 
-# Define the Nmap scan signatures
-nmap_scan_signatures = ["S", "FPU", "NULL", "XMAS", "ACK"]
+# Liste des signatures de scans de port à détecter
+port_scan_signatures = ["S", "FPU", "NULL", "XMAS", "ACK"]
 
-"""
-This code checks if a TCP packet with an S flag is sent to a well-known port (e.g., FTP, SSH, Telnet, SMTP, HTTP, HTTPS) 
-waits for a short period of time (1 second in this example) to see if more SYN packets are sent, and then checks if 
-the packet matches the fingerprint of Nmap.
-"""
+# Fonction de détection de scan de port
+def detect_port_scan(pkt):
+    # Vérifier si le paquet contient une couche TCP et si le drapeau TCP correspond à une signature de scan de port
+    if (pkt.haslayer(TCP) and pkt[TCP].flags in port_scan_signatures
+        # Vérifier si le port de destination est l'un des ports sensibles (21, 22, 23, 25, 80, 443)
+        and pkt[TCP].dport in [21, 22, 23, 25, 80, 443]):
+        
+        # Attendre 1 seconde pour permettre à d'autres paquets de compléter un éventuel handshake TCP
+        time.sleep(1)
+        
+        # Vérifier si le paquet a une charge utile TCP vide et une fenêtre TCP de 8192 octets
+        if len(pkt[TCP].payload) == 0 and pkt[TCP].window == 8192:
+            # Afficher un message indiquant qu'un scan de port a été détecté
+            print(f"Scan de port détecté depuis {pkt[IP].src}:{pkt[TCP].sport}")
 
-
-def detect_nmap_scan(pkt):
-    # Check if the packet is a TCP SYN packet
-    if pkt.haslayer(TCP) and pkt[TCP].flags in nmap_scan_signatures:
-        # Check if the packet is sent to a well-known port
-        if pkt[TCP].dport in [21, 22, 23, 25, 80, 443]:
-            # Wait for a short period of time to see if more SYN packets are sent
-            time.sleep(1)
-            if len(pkt[TCP].payload) == 0 and pkt[TCP].window == 8192:
-                # The packet is likely sent by Nmap
-                print("Nmap scan detected from %s:%s" % (pkt[IP].src, pkt[TCP].sport))
-
-
-# Start sniffing packets
-sniff(prn=detect_nmap_scan, filter="tcp")
+# Capturer les paquets TCP et appeler la fonction de détection de scan de port pour chaque paquet
+sniff(prn=detect_port_scan, filter="tcp")

@@ -3,13 +3,15 @@ import json
 import requests
 import time
 
+LOG = '../resultat.txt'
 ips = []
 interface = "wlan0"
 api_key = "24f96dafeb29ade43f5b57f2bd860e72152432a610a8f7b4059213059893802f"
-my_ip = "192.168.0.16"
+my_ip = "192.168.0.13"
 
 
 def packet_callback(packet):
+    # sourcery skip: extract-method, last-if-guard, use-fstring-for-formatting
     if packet.haslayer(IP):
         src_ip = packet[IP].src
         if not src_ip.startswith("10.") and not src_ip.startswith("172.") and not src_ip.startswith("192.168") and packet[IP].dst == my_ip:
@@ -31,21 +33,22 @@ def packet_callback(packet):
 
             # Check if the IP address is considered malicious
             if data["data"]["attributes"]["last_analysis_stats"]["malicious"] == 0 and data["data"]["attributes"]["last_analysis_stats"]["suspicious"] == 0:
-                with open('../resultat.txt', 'a') as r:
+                with open(LOG, 'a') as r:
                     r.write(ip) and r.write(' --\twhite list\n')
 
             elif data["data"]["attributes"]["last_analysis_stats"]["malicious"] >= 0:
-                with open('../resultat.txt', 'a') as r:
+                with open(LOG, 'a') as r:
                     r.write(ip) and r.write(' --\tblack list\n')
 
             elif data["data"]["attributes"]["last_analysis_stats"]["suspicious"] >= 0:
-                with open('../resultat.txt', 'a') as r:
+                with open(LOG, 'a') as r:
                     r.write(ip) and r.write(' --\tgrey list\n')
 
             else:
                 print("ip not found")
 
+            # sleep 15 seconds to wait for the api response
             time.sleep(15)
 
 
-sniff(iface=interface, filter="ip", prn=packet_callback)
+sniff(filter="ip", prn=packet_callback)
