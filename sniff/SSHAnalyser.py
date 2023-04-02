@@ -1,5 +1,5 @@
 from scapy.all import *
-import sys
+
 SSHPasswordAttempts = {}
 SSHsuccess = {}
 SSHLoginAttempts = {}
@@ -37,4 +37,3 @@ def SSHAnalysis(pkt):       #analyse les paquets ssh
         SSHLoginAttempts[key][dst] = 0
 
 sniff(filter="tcp and port 22", prn=SSHAnalysis)
-
