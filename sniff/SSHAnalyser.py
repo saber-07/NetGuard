@@ -1,7 +1,5 @@
 from scapy.all import *
 import sys
-import json
-SSHconnexions = {}
 SSHPasswordAttempts = {}
 SSHsuccess = {}
 SSHLoginAttempts = {}
@@ -18,8 +16,6 @@ def SSHAnalysis(pkt):       #analyse les paquets ssh
     SSHPasswordAttempts[key].setdefault(dport, 0)
     SSHsuccess.setdefault(key, {})
     SSHsuccess[key].setdefault(dport, 0)
-    SSHconnexions.setdefault(key, {})
-    SSHconnexions[key].setdefault(dport, 0)
 
     if pkt[IP].len in [73, 85] and dst in SSHLoginAttempts[key]:
         SSHLoginAttempts[key][dst] +=1
@@ -36,14 +32,9 @@ def SSHAnalysis(pkt):       #analyse les paquets ssh
     if (SSHPasswordAttempts[key][dport] > 10 or SSHLoginAttempts[key][dst] > 10) and pkt[IP].len in [73, 85]:  # eventuelle tentative de brute force
         print("Potential brute forcing detected. \n")
 
-    if dport in SSHconnexions[key]:
-        SSHconnexions[key][dport]+=1
-
     if pkt[IP].len in [128,88,192]: #Déconnexion
-        print("\t\t..........DISCONNECT...........\n")
         SSHsuccess[key][dport] = 0
         SSHLoginAttempts[key][dst] = 0
 
 sniff(filter="tcp and port 22", prn=SSHAnalysis)
-
 
