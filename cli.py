@@ -1,51 +1,63 @@
-import os
-import sys
 import argparse
-from sniff import SSHAnalyser, ICMPspoofing, ARPspoofing, SmurfAttack, SYNscan, mailCredantials, ipClassification, PortScan, PortScanning
+import subprocess
+import sys
 
 def main():
-    if os.geteuid() != 0:
-        print('Warning: this script requires root privileges', file=sys.stderr)
+
     parser = argparse.ArgumentParser(description='Hello')
 
-    parser.add_argument("sniffer", choices=["ssh","icmp","arp","smurf","syn","mail","ip","pscan","pscanning"],
-                        help="which sniffer to use")
+    parser.add_argument("--sniffer", choices=["ssh","icmp","arp","smurf","syn","mail","ip","pscan","pscanning"],     help="which sniffer to use")
 
 
     args = parser.parse_args()
 
-
-
     if args.sniffer == "ssh":
-        SSHAnalyser.sniff()
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/SSHAnalyser.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/SSHAnalyser.py"])
     elif args.sniffer == "icmp":
-        ICMPspoofing.sniff()
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/ICMPspoofing.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/ICMPspoofing.py"])
     elif args.sniffer == "arp":
-        ARPspoofing.sniff()
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/ARPspoofing.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/ARPspoofing.py"])
     elif args.sniffer == "smurf":
-        SmurfAttack.sniff()
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/SmurfAttack.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/SmurfAttack.py"])
     elif args.sniffer == "syn":
-        printf("syn")
-        SYNscan.sniff()
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/SYNscan.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/SYNscan.py"])
     elif args.sniffer == "mail":
-        mailCredantials.sniff()
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/mailCredantials.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/mailCredantials.py"])
     elif args.sniffer == "ip":
-        ipClassification.sniff()
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/ipClassification.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/ipClassification.py"])
     elif args.sniffer == "pscan":
-        PortScan.sniff()
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/PortScan.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/PortScan.py"])
     elif args.sniffer == "pscanning":
-        PortScanning.sniff()
-
-
-
-
+        if sys.platform.startswith('win'):
+            subprocess.call(["py", "./sniff/PortScanning.py"])
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            subprocess.call(["python3", "./sniff/PortScanning.py"])
+    else:
+         print("programme inconnu")
+        
 if __name__ == '__main__':
     main()
