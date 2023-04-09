@@ -1,6 +1,5 @@
 from scapy.all import *
 import time
-
 # Liste des signatures de scans de port à détecter
 port_scan_signatures = ["S", "FPU", "NULL", "XMAS", "ACK"]
 
@@ -18,6 +17,7 @@ def detect_port_scan(pkt):
         if len(pkt[TCP].payload) == 0 and pkt[TCP].window == 8192:
             # Afficher un message indiquant qu'un scan de port a été détecté
             print(f"Scan de port détecté depuis {pkt[IP].src}:{pkt[TCP].sport}")
+            with open("./log",'a') as r:
+                r.write("Scan de port détecté depuis {}:{}".format(pkt[IP].src,pkt[TCP].sport))
 
 # Capturer les paquets TCP et appeler la fonction de détection de scan de port pour chaque paquet
-sniff(prn=detect_port_scan, filter="tcp")

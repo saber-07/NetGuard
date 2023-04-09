@@ -21,14 +21,9 @@ def arp_display(pkt):
             response_mac = pkt[ARP].hwsrc # Récupérer l'adresse MAC de la réponse
             if real_mac != response_mac:
                 print(f"[!] Détection de spoofing ARP de {response_mac} à {pkt[ARP].psrc}")
+                with open("./log", 'a') as r:
+                    r.write(f"[!] Détection de spoofing ARP de {response_mac} à {pkt[ARP].psrc}")
                 # Alerter l'administrateur ici en utilisant un e-mail ou autre méthode
         except Exception as e:
             print(e)
 
-try:
-    print("[*] Démarrage de la détection de spoofing ARP")
-    sniff(filter="arp", prn=arp_display, store=0, count=0)
-    # Capturer les paquets ARP
-except KeyboardInterrupt:
-    print("[*] Arrêt de la détection de spoofing ARP")
-    exit(0)

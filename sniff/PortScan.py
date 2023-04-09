@@ -1,5 +1,6 @@
 from scapy.all import *
 import time
+import json
 
 # Define the list of common ports to scan
 common_ports = [21, 22, 23, 25, 80, 443]
@@ -21,7 +22,7 @@ def check_port_scan():
     for port in common_ports:
         if port_counts[port] > 3:
             print(f"Possible port scanning detected on port {port}!")
-            with open("../log", 'a') as r:
+            with open("./log", 'a') as r:
                 r.write(f"Possible port scanning detected on port {port}!")
 
     # Reset the port counts

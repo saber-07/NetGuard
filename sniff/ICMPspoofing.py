@@ -1,4 +1,7 @@
 from scapy.all import *
+import json
+
+log = './log'
 
 ip = "192.168.0.16"
 def detect_unsolicited_ping(packet):
@@ -12,6 +15,8 @@ def detect_unsolicited_ping(packet):
     # Si la longueur des données ICMP est de 32 ou 48 octets, cela signifie que c'est un paquet ICMP de taille normale, sinon, cela pourrait être une attaque de ping par lots.
     if data_len not in [32, 48, 56]:
         print(f"Large ICMP packet detected: {data_len} bytes from {packet[IP].src}")
+        with open(log, 'a') as r:
+            r.write("Large ICMP packet detected: {} bytes from {}\n".format(data_len, packet[IP].src))    
     else:
         captured_icmp_packets = []
 
@@ -35,8 +40,3 @@ def detect_unsolicited_ping(packet):
                        for packet in captured_icmp_packets):
                 # Si aucune demande de ping correspondante n'a été trouvée, cela peut indiquer une attaque de ping non sollicité.
                 print("Unsolicited ping detected from", packet[IP].src)
-
-
-# Commence la capture de paquets ICMP et appelle la fonction detect_unsolicited_ping pour chaque paquet capturé
-sniff(filter="icmp", prn=detect_unsolicited_ping)
-

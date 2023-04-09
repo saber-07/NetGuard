@@ -16,10 +16,14 @@ def detect_port_scan(pkt):  # sourcery skip: extract-method, last-if-guard
         if len(ack_pkt) == 0:
             # Si aucun drapeau ACK n'est reçu, indiquer qu'un scan TCP SYN a été détecté
             print(f"Scan TCP SYN détecté de {src_ip} à {dst_ip} sur le port {dport}")
+            with open("./log",'a') as r:
+                r.write("Scan TCP SYN détecté de {} à {} sur le port {}".format(src_ip,dst_ip,dport))
             # Ou prendre toute autre mesure, comme journaliser l'événement, bloquer l'IP, etc.
         else:
             # Si un drapeau ACK est reçu, indiquer qu'une connexion légitime a peut-être été établie
             print(f"Paquet reçu après SYN/ACK de {src_ip} à {dst_ip} sur le port {dport}, connexion légitime possible")
+            with open("./log",'a') as r:
+                r.write("Paquet reçu après SYN/ACK de {} à {} sur le port {}, connexion légitime possible".format(src_ip,dst_ip,dport))
+
 
 # Capturer les paquets TCP 
-sniff(filter="tcp ", prn=detect_port_scan)

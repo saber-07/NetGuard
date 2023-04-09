@@ -3,7 +3,7 @@ import json
 import requests
 import time
 
-LOG = '../resultat.txt'
+LOG = './resultat.txt'
 ips = []
 interface = "wlan0"
 api_key = "24f96dafeb29ade43f5b57f2bd860e72152432a610a8f7b4059213059893802f"

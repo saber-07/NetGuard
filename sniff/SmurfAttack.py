@@ -1,5 +1,5 @@
 from scapy.all import *
-
+log = './log'
 
 # La fonction is_ping_packet retourne vrai si le paquet ICMP est de type ping (type 8)
 def is_ping_packet(packet):
@@ -15,6 +15,5 @@ def is_broadcast_packet(packet):
 def detect_smurf_attack(packet):
     if is_ping_packet(packet) and is_broadcast_packet(packet):
         print("Smurf attack detected from", packet[IP].src)
-
-# Sniffe les paquets ICMP et appelle la fonction detect_smurf_attack pour chaque paquet reçu
-sniff(filter="icmp", prn=detect_smurf_attack)
+        with open(log,'a') as r:
+            r.write(" \nSmurf attack detected from:") and r.write(packet[IP].src)
