@@ -1,28 +1,48 @@
 from scapy.all import *
+import time
 
-# Définir l'adresse IP de l'hôte cible
-target_host = "192.168.1.100"
-
-# Définir une liste de ports courants à scanner
+# Define the list of common ports to scan
 common_ports = [21, 22, 23, 25, 80, 443]
 
-# Initialiser un dictionnaire pour suivre le nombre de connexions à chaque port
+# Define the list of TCP flags used in port scanning
+port_scan_signatures = ["S", "A", "F", "FPU", ""]
+
+# Initialize a dictionary to keep track of the number of connections to each port
 port_counts = {port: 0 for port in common_ports}
 
-# Définir une fonction de rappel de paquet qui sera appelée pour chaque paquet dans le trafic capturé
-def packet_callback(packet):
-    # Vérifier si le paquet est un paquet TCP et a le drapeau SYN activé (c'est-à-dire, c'est un paquet SYN)
-    if (
-        TCP in packet
-        and packet[TCP].flags == "S"
-        and packet[IP].src == target_host
-        and packet[TCP].dport in common_ports):
-        # Incrémenter le compte pour ce port
-        port_counts[packet[TCP].dport] += 1
-        # Vérifier si ce port a eu plus de 3 connexions
-        if port_counts[packet[TCP].dport] > 3:
-            print(f"Possible port scanning detected from {target_host} to port {packet[TCP].dport}!")
+# Define the time window (in seconds) between successive port scan checks
+time_window = 10
 
-# Capturer le trafic sur l'interface réseau pendant 60 secondes
-# en appelant la fonction de rappel de paquet pour chaque paquet correspondant à notre filtre
-sniff(prn=packet_callback, filter=f"src {target_host} and tcp", timeout=60)
+# Define a function to check for port scans
+def check_port_scan():
+    print(f"Checking for port scans at {time.ctime()}")
+
+    # Check the port counts for each common port
+    for port in common_ports:
+        if port_counts[port] > 3:
+            print(f"Possible port scanning detected on port {port}!")
+
+    # Reset the port counts
+    port_counts.clear()
+    port_counts.update({port: 0 for port in common_ports})
+
+# Define a function to process each packet in the captured traffic
+def packet_callback(packet):
+    # Check if the packet is a TCP packet with a SYN, ACK, FIN, URG, or PSH flag set
+    if (
+            TCP in packet
+            and packet[TCP].flags in port_scan_signatures
+            and packet[TCP].dport in common_ports):
+        # Increment the count for this port
+        port_counts[packet[TCP].dport] += 1
+
+# Start capturing traffic and checking for port scans
+while True:
+    # Capture traffic on the network interface for the specified time window
+    sniff(prn=packet_callback, filter="tcp", store=0, timeout=time_window)
+
+    # Check for port scans
+    check_port_scan()
+
+    # Wait for the specified time window before checking again
+    time.sleep(time_window)

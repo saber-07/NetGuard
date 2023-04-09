@@ -52,7 +52,7 @@ def poison_target(gateway_ip, gateway_mac, target_ip, target_mac):
 
 
 interface = "wlan0"
-target_ip = "192.168.0.17"
+target_ip = "192.168.0.13"
 gateway_ip = "192.168.0.1"
 packet_count = 1000
 

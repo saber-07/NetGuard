@@ -7,14 +7,14 @@ LOG = '../resultat.txt'
 ips = []
 interface = "wlan0"
 api_key = "24f96dafeb29ade43f5b57f2bd860e72152432a610a8f7b4059213059893802f"
-my_ip = "192.168.0.13"
+# my_ip = "93.6.139.189"
 
 
 def packet_callback(packet):
     # sourcery skip: extract-method, last-if-guard, use-fstring-for-formatting
     if packet.haslayer(IP):
         src_ip = packet[IP].src
-        if not src_ip.startswith("10.") and not src_ip.startswith("172.") and not src_ip.startswith("192.168") and packet[IP].dst == my_ip:
+        if not src_ip.startswith("10.") and not src_ip.startswith("172.") and not src_ip.startswith("192.168") :
             print(packet[IP].src)
             ip = packet[IP].src
             # Construct the request URL
