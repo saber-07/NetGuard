@@ -23,7 +23,7 @@ def check_port_scan():
         if port_counts[port] > 3:
             print(f"Possible port scanning detected on port {port}!")
             with open("./log", 'a') as r:
-                r.write(f"Possible port scanning detected on port {port}!")
+                r.write(f"Possible port scanning detected on port {port}\n!")
 
     # Reset the port counts
     port_counts.clear()

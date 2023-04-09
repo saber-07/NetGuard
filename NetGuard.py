@@ -39,7 +39,7 @@ def icmp_spoofing():
         sniff(filter="icmp",prn=ICMPspoofing.detect_unsolicited_ping)
 
 @Netguard.command()
-def ssh_bbrut_force_detector():
+def ssh_brut_force_detector():
     print("Checking for SSH brute force attack...")
     sniff(filter="ip",prn=SSHAnalyser.SSHAnalysis)
 
@@ -64,12 +64,12 @@ def Smurf_Attack_detector():
 
 Netguard.add_command(ip_detector)
 Netguard.add_command(port_scan_detector)
-Netguard.add_command(ssh_bbrut_force_detector)
+Netguard.add_command(ssh_brut_force_detector)
 Netguard.add_command(arp_spoofing_detector)
 Netguard.add_command(port_scanning)
-Netguard.add_command(port_scan_detector)
 Netguard.add_command(syn_scan)
 Netguard.add_command(Smurf_Attack_detector)
+Netguard.add_command(icmp_spoofing)
 
 if __name__ == '__main__':
     Netguard()

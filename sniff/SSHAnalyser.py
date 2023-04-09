@@ -1,6 +1,4 @@
 from scapy.all import *
-import json
-import requests
 
 SSHPasswordAttempts = {}
 SSHsuccess = {}
@@ -9,11 +7,12 @@ log = './log'
 
 
 def SSHAnalysis(pkt):       #analyse les paquets ssh
-
     src = pkt[IP].src
     dst = pkt[IP].dst
     key = "dst:%s, src:%s" % (dst,src)
     dport = pkt[TCP].dport
+
+
     SSHLoginAttempts.setdefault(key, {})
     SSHLoginAttempts[key].setdefault(dst, 0)
     SSHPasswordAttempts.setdefault(key, {})
@@ -26,20 +25,20 @@ def SSHAnalysis(pkt):       #analyse les paquets ssh
         print("%s Connection attempt from: \n IP:%s\n length:%s\n ethernet: %s\n" 
               % (SSHLoginAttempts[key][dst],pkt[IP].src, pkt[IP].len + 14, pkt[Ether].src))
         with open(log, 'a') as r:
-            r.write(SSHLoginAttempts[key][dst]) and r.write("\t-- Connection attempt\n")
+            r.write(pkt[IP].src) and r.write("\t-- Connection attempt\n")
 
 
     if pkt[IP].len in [668,696] and dport in SSHsuccess[key]:  #paquets correspondant à la réussite de connexion
             SSHsuccess[key][dport] += 1
             print("\t\t.....................SSH success: %s\n" % SSHsuccess[key][dport])
             with open(log, 'a') as r:
-                r.write(SSHLoginAttempts[key][dst]) and r.write("\t-- Connection success\n")
+                r.write(pkt[IP].src) and r.write("\t-- Connection success\n")
 
     if pkt[IP].len in [116, 128, 136] and dport in SSHPasswordAttempts[key]:
         SSHPasswordAttempts[key][dport] += 1
             # eventuelles tentative de brute force
         with open(log, 'a') as r:
-            r.write(SSHLoginAttempts[key][dst]) and r.write("\t-- Connection success\n")
+            r.write(pkt[IP].src) and r.write("\t-- Connection success\n")
 
     if (SSHPasswordAttempts[key][dport] > 10 or SSHLoginAttempts[key][dst] > 10) and pkt[IP].len in [73, 85]:  # eventuelle tentative de brute force
         print("Potential brute forcing detected. \n")

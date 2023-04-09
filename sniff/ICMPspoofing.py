@@ -3,7 +3,7 @@ import json
 
 log = './log'
 
-ip = "192.168.0.16"
+my_ip = "192.168.0.16"
 def detect_unsolicited_ping(packet):
     # Vérifie si contient le protocole ICMP
     if not packet.haslayer(ICMP):
@@ -30,13 +30,15 @@ def detect_unsolicited_ping(packet):
             echo_request_id = packet[ICMP].id
             echo_request_seq = packet[ICMP].seq
 
-            #if(packet[IP].src!=ip):
+            if(packet[IP].src!=my_ip):
             
-            # Vérifie si aucune demande de ping n'a été enregistrée pour cette réponse ICMP
-            if not any(packet.haslayer(ICMP) and
-                       packet[ICMP].type == 8 and
-                       packet[ICMP].id == echo_request_id and
-                       packet[ICMP].seq == echo_request_seq
-                       for packet in captured_icmp_packets):
-                # Si aucune demande de ping correspondante n'a été trouvée, cela peut indiquer une attaque de ping non sollicité.
-                print("Unsolicited ping detected from", packet[IP].src)
+                # Vérifie si aucune demande de ping n'a été enregistrée pour cette réponse ICMP
+                if not any(packet.haslayer(ICMP) and
+                        packet[ICMP].type == 8 and
+                        packet[ICMP].id == echo_request_id and
+                        packet[ICMP].seq == echo_request_seq
+                        for packet in captured_icmp_packets):
+                    # Si aucune demande de ping correspondante n'a été trouvée, cela peut indiquer une attaque de ping non sollicité.
+                    print("Unsolicited ping detected from", packet[IP].src)
+                    with open(log, 'a') as r:
+                        r.write("Unsolicited ping detected from {}\n".format(packet[IP].src))    

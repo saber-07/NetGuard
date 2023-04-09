@@ -22,7 +22,7 @@ def arp_display(pkt):
             if real_mac != response_mac:
                 print(f"[!] Détection de spoofing ARP de {response_mac} à {pkt[ARP].psrc}")
                 with open("./log", 'a') as r:
-                    r.write(f"[!] Détection de spoofing ARP de {response_mac} à {pkt[ARP].psrc}")
+                    r.write("[!] Détection de spoofing ARP de {} à {}\n".format(response_mac,pkt[ARP].psrc))
                 # Alerter l'administrateur ici en utilisant un e-mail ou autre méthode
         except Exception as e:
             print(e)
