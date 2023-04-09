@@ -1,9 +1,31 @@
 from scapy.all import *
-import json
+import socket
+import netifaces
+from datetime import datetime,date
+
+
+
+
+now = datetime.now()
+today = datetime.today()
+d2 = today.strftime("%B %d, %Y")
+current_time=now.strftime("%H:%M:%S")
+
+
+# Obtient les informations sur les interfaces réseau de la machine
+interfaces = netifaces.interfaces()
+
+# Parcourt les interfaces pour obtenir l'adresse IP de la première interface non locale
+for interface in interfaces:
+    if interface.startswith('lo'):
+        continue
+    addresses = netifaces.ifaddresses(interface)
+    if netifaces.AF_INET in addresses:
+        my_ip = addresses[netifaces.AF_INET][0]['addr']
+        break
 
 log = './log'
 
-my_ip = "192.168.0.16"
 def detect_unsolicited_ping(packet):
     # Vérifie si contient le protocole ICMP
     if not packet.haslayer(ICMP):
@@ -16,7 +38,7 @@ def detect_unsolicited_ping(packet):
     if data_len not in [32, 48, 56]:
         print(f"Large ICMP packet detected: {data_len} bytes from {packet[IP].src}")
         with open(log, 'a') as r:
-            r.write("Large ICMP packet detected: {} bytes from {}\n".format(data_len, packet[IP].src))    
+            r.write("{}: ".format(d2)) and r.write(current_time) and r.write("Large ICMP packet detected: {} bytes from {}\n".format(data_len, packet[IP].src))    
     else:
         captured_icmp_packets = []
 
@@ -41,4 +63,4 @@ def detect_unsolicited_ping(packet):
                     # Si aucune demande de ping correspondante n'a été trouvée, cela peut indiquer une attaque de ping non sollicité.
                     print("Unsolicited ping detected from", packet[IP].src)
                     with open(log, 'a') as r:
-                        r.write("Unsolicited ping detected from {}\n".format(packet[IP].src))    
+                       r.write("{}: ".format(d2)) and r.write(current_time) and r.write("Unsolicited ping detected from {}\n".format(packet[IP].src))    

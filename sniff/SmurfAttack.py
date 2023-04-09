@@ -1,4 +1,14 @@
 from scapy.all import *
+from datetime import datetime,date
+
+
+
+
+now = datetime.now()
+today = datetime.today()
+d2 = today.strftime("%B %d, %Y")
+current_time=now.strftime("%H:%M:%S")
+
 log = './log'
 
 # La fonction is_ping_packet retourne vrai si le paquet ICMP est de type ping (type 8)
@@ -16,4 +26,4 @@ def detect_smurf_attack(packet):
     if is_ping_packet(packet) and is_broadcast_packet(packet):
         print("Smurf attack detected from", packet[IP].src)
         with open(log,'a') as r:
-            r.write(" \nSmurf attack detected from:") and r.write(packet[IP].src)
+            r.write("{}: ".format(d2)) and r.write(current_time) and r.write(" \nSmurf attack detected from:") and r.write(packet[IP].src)

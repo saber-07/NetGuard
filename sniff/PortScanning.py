@@ -1,5 +1,14 @@
 from scapy.layers.inet import TCP,IP
 import time
+from datetime import datetime,date
+
+
+
+
+now = datetime.now()
+today = datetime.today()
+d2 = today.strftime("%B %d, %Y")
+current_time=now.strftime("%H:%M:%S")
 
 # Liste des signatures de scans de port à détecter
 port_scan_signatures = {"S", "FPU", "NULL", "XMAS", "ACK"}
@@ -19,7 +28,7 @@ def detect_port_scan(pkt):
                     # Afficher un message indiquant qu'un scan de port a été détecté
                     print(f"Scan de port détecté depuis {pkt[IP].src}:{pkt[TCP].sport}")
                     with open("./log",'a') as r:
-                        r.write("Scan de port détecté depuis {}:{}\n".format(pkt[IP].src,pkt[TCP].sport))
+                        r.write("{}: ".format(d2)) and r.write(current_time) and r.write("Scan de port détecté depuis {}:{}\n".format(pkt[IP].src,pkt[TCP].sport))
 
     
     

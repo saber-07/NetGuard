@@ -1,4 +1,13 @@
 from scapy.all import *
+from datetime import datetime,date
+
+
+
+
+now = datetime.now()
+today = datetime.today()
+d2 = today.strftime("%B %d, %Y")
+current_time=now.strftime("%H:%M:%S")
 
 
 # Désactiver la sortie de texte
@@ -22,7 +31,7 @@ def arp_display(pkt):
             if real_mac != response_mac:
                 print(f"[!] Détection de spoofing ARP de {response_mac} à {pkt[ARP].psrc}")
                 with open("./log", 'a') as r:
-                    r.write("[!] Détection de spoofing ARP de {} à {}\n".format(response_mac,pkt[ARP].psrc))
+                    r.write("{}: ".format(d2)) and r.write(current_time) and r.write("[!] Détection de spoofing ARP de {} à {}\n".format(response_mac,pkt[ARP].psrc))
                 # Alerter l'administrateur ici en utilisant un e-mail ou autre méthode
         except Exception as e:
             print(e)
