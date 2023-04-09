@@ -51,4 +51,3 @@ def packet_callback(packet):
             time.sleep(15)
 
 
-sniff(filter="ip", prn=packet_callback)

@@ -21,6 +21,8 @@ def check_port_scan():
     for port in common_ports:
         if port_counts[port] > 3:
             print(f"Possible port scanning detected on port {port}!")
+            with open("../log", 'a') as r:
+                r.write(f"Possible port scanning detected on port {port}!")
 
     # Reset the port counts
     port_counts.clear()
@@ -36,13 +38,3 @@ def packet_callback(packet):
         # Increment the count for this port
         port_counts[packet[TCP].dport] += 1
 
-# Start capturing traffic and checking for port scans
-while True:
-    # Capture traffic on the network interface for the specified time window
-    sniff(prn=packet_callback, filter="tcp", store=0, timeout=time_window)
-
-    # Check for port scans
-    check_port_scan()
-
-    # Wait for the specified time window before checking again
-    time.sleep(time_window)
